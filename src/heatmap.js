@@ -1,30 +1,40 @@
 // Real Leaflet map of Bangalore with noise hotspot overlays
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { updateForecastChartData } from './charts.js';
+
+const API_KEY = import.meta.env.VITE_TOMTOM_API_KEY;
+const TOP_HOTSPOTS = [
+  'Majestic / KSR Station',
+  'Silk Board Junction',
+  'MG Road',
+  'KR Market',
+  'Hebbal Flyover'
+];
 
 const BANGALORE_CENTER = [12.9716, 77.5946];
 const BANGALORE_ZOOM = 12;
 
 // Real Bangalore coordinates for noise hotspots
 const HOTSPOTS = [
-  { name: 'Majestic / KSR Station', lat: 12.9767, lng: 77.5713, db: 89, level: 'high', type: 'Traffic + Transit Hub' },
-  { name: 'Silk Board Junction', lat: 12.9177, lng: 77.6238, db: 86, level: 'high', type: 'Traffic Congestion' },
-  { name: 'MG Road', lat: 12.9756, lng: 77.6064, db: 84, level: 'high', type: 'Nightlife + Traffic' },
-  { name: 'KR Market', lat: 12.9631, lng: 77.5775, db: 82, level: 'high', type: 'Market + Traffic' },
-  { name: 'Koramangala', lat: 12.9352, lng: 77.6245, db: 72, level: 'medium', type: 'Commercial Area' },
-  { name: 'Indiranagar', lat: 12.9784, lng: 77.6408, db: 74, level: 'medium', type: 'Nightlife District' },
-  { name: 'Whitefield', lat: 12.9698, lng: 77.7500, db: 68, level: 'medium', type: 'IT Corridor + Construction' },
-  { name: 'Marathahalli', lat: 12.9591, lng: 77.7009, db: 71, level: 'medium', type: 'Traffic + Commercial' },
-  { name: 'BTM Layout', lat: 12.9166, lng: 77.6101, db: 65, level: 'medium', type: 'Residential + Traffic' },
-  { name: 'Hebbal Flyover', lat: 13.0358, lng: 77.5970, db: 73, level: 'medium', type: 'Highway Traffic' },
-  { name: 'Yeshwanthpur', lat: 13.0220, lng: 77.5440, db: 70, level: 'medium', type: 'Railway + Market' },
-  { name: 'Jayanagar', lat: 12.9299, lng: 77.5838, db: 45, level: 'low', type: 'Residential' },
-  { name: 'Rajajinagar', lat: 12.9900, lng: 77.5530, db: 52, level: 'low', type: 'Mixed Residential' },
-  { name: 'Electronic City', lat: 12.8456, lng: 77.6603, db: 48, level: 'low', type: 'IT Park' },
-  { name: 'Banashankari', lat: 12.9255, lng: 77.5468, db: 50, level: 'low', type: 'Residential' },
-  { name: 'JP Nagar', lat: 12.9063, lng: 77.5857, db: 47, level: 'low', type: 'Residential' },
-  { name: 'Yelahanka', lat: 13.1005, lng: 77.5963, db: 44, level: 'low', type: 'Suburb' },
-  { name: 'HSR Layout', lat: 12.9116, lng: 77.6474, db: 55, level: 'low', type: 'Residential + Startups' },
+  { name: 'Majestic / KSR Station', lat: 12.9767, lng: 77.5713, db: 89, level: 'high', type: 'Traffic + Transit Hub', sources: ['traffic'] },
+  { name: 'Silk Board Junction', lat: 12.9177, lng: 77.6238, db: 86, level: 'high', type: 'Traffic Congestion', sources: ['traffic'] },
+  { name: 'MG Road', lat: 12.9756, lng: 77.6064, db: 84, level: 'high', type: 'Nightlife + Traffic', sources: ['traffic', 'speech'] },
+  { name: 'KR Market', lat: 12.9631, lng: 77.5775, db: 82, level: 'high', type: 'Market + Traffic', sources: ['traffic'] },
+  { name: 'Koramangala', lat: 12.9352, lng: 77.6245, db: 72, level: 'medium', type: 'Commercial Area', sources: ['traffic', 'speech'] },
+  { name: 'Indiranagar', lat: 12.9784, lng: 77.6408, db: 74, level: 'medium', type: 'Nightlife District', sources: ['traffic', 'speech'] },
+  { name: 'Whitefield', lat: 12.9698, lng: 77.7500, db: 68, level: 'medium', type: 'IT Corridor + Construction', sources: ['traffic', 'construction'] },
+  { name: 'Marathahalli', lat: 12.9591, lng: 77.7009, db: 71, level: 'medium', type: 'Traffic + Commercial', sources: ['traffic'] },
+  { name: 'BTM Layout', lat: 12.9166, lng: 77.6101, db: 65, level: 'medium', type: 'Residential + Traffic', sources: ['traffic'] },
+  { name: 'Hebbal Flyover', lat: 13.0358, lng: 77.5970, db: 73, level: 'medium', type: 'Highway Traffic', sources: ['traffic'] },
+  { name: 'Yeshwanthpur', lat: 13.0220, lng: 77.5440, db: 70, level: 'medium', type: 'Railway + Market', sources: ['traffic'] },
+  { name: 'Jayanagar', lat: 12.9299, lng: 77.5838, db: 45, level: 'low', type: 'Residential', sources: ['speech'] },
+  { name: 'Rajajinagar', lat: 12.9900, lng: 77.5530, db: 52, level: 'low', type: 'Mixed Residential', sources: ['speech'] },
+  { name: 'Electronic City', lat: 12.8456, lng: 77.6603, db: 48, level: 'low', type: 'IT Park', sources: ['traffic'] },
+  { name: 'Banashankari', lat: 12.9255, lng: 77.5468, db: 50, level: 'low', type: 'Residential', sources: ['speech'] },
+  { name: 'JP Nagar', lat: 12.9063, lng: 77.5857, db: 47, level: 'low', type: 'Residential', sources: ['speech'] },
+  { name: 'Yelahanka', lat: 13.1005, lng: 77.5963, db: 44, level: 'low', type: 'Suburb', sources: ['speech'] },
+  { name: 'HSR Layout', lat: 12.9116, lng: 77.6474, db: 55, level: 'low', type: 'Residential + Startups', sources: ['traffic', 'speech'] },
 ];
 
 // Vulnerability zones (hospitals, schools)
@@ -46,9 +56,9 @@ function getColor(db) {
 }
 
 function getRadius(db) {
-  if (db >= 80) return 800;
-  if (db >= 65) return 600;
-  return 450;
+  if (db >= 80) return 1200;
+  if (db >= 65) return 900;
+  return 600;
 }
 
 function getPulseClass(level) {
@@ -94,14 +104,14 @@ export function initHeatmap() {
   // Live noise circles
   const hotspotMarkers = [];
   HOTSPOTS.forEach(hs => {
-    // Colored circle
+    // Colored circle (Styled for a continuous contour effect)
     const circle = L.circle([hs.lat, hs.lng], {
       radius: getRadius(hs.db),
       color: getColor(hs.db),
       fillColor: getColor(hs.db),
-      fillOpacity: 0.25,
-      weight: 1.5,
-      opacity: 0.6,
+      fillOpacity: 0.15,
+      weight: 0.5,
+      opacity: 0.3,
     });
     circle.bindPopup(`
       <div style="font-family:'Inter',sans-serif;min-width:180px">
@@ -132,7 +142,7 @@ export function initHeatmap() {
     const labelMarker = L.marker([hs.lat, hs.lng], { icon: labelIcon, interactive: false });
     labelMarker.addTo(liveLayer);
 
-    hotspotMarkers.push({ circle, hs });
+    hotspotMarkers.push({ circle, marker, labelMarker, hs });
   });
 
   // Predictive layer (simulated future hotspots)
@@ -217,15 +227,171 @@ export function initHeatmap() {
     });
   });
 
-  // Simulate dB jitter
-  setInterval(() => {
-    hotspotMarkers.forEach(({ circle, hs }) => {
-      const jitter = (Math.random() - 0.5) * 6;
-      const newDb = Math.round(Math.max(35, Math.min(98, hs.db + jitter)));
-      circle.setRadius(getRadius(newDb));
-      circle.setStyle({ color: getColor(newDb), fillColor: getColor(newDb) });
+  // Live traffic fetch for top hotspots + jitter for others
+  async function updateTraffic() {
+    if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') {
+      console.warn('TomTom API Key not set or placeholder used.');
+    }
+
+    const timeSlider = document.getElementById('time-slider');
+    const hour = timeSlider ? parseInt(timeSlider.value) : 12;
+    let timeFactor = 1.0;
+    if (hour < 6 || hour > 22) timeFactor = 0.6;
+    else if (hour < 9 || hour > 18) timeFactor = 0.8;
+
+    let liveTotalDb = 0;
+    let liveCount = 0;
+
+    for (const { circle, marker, labelMarker, hs } of hotspotMarkers) {
+      const isTop = TOP_HOTSPOTS.includes(hs.name);
+      if (isTop && API_KEY && API_KEY !== 'YOUR_API_KEY_HERE') {
+        try {
+          const response = await fetch(`https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?key=${API_KEY}&point=${hs.lat},${hs.lng}`);
+
+          if (!response.ok) {
+            console.error(`TomTom API Error for ${hs.name}:`, response.status, response.statusText);
+            const errorText = await response.text();
+            console.error('Error details:', errorText);
+            continue; // Skip to next hotspot
+          }
+
+          const data = await response.json();
+          if (data.flowSegmentData) {
+            const { currentSpeed, freeFlowSpeed } = data.flowSegmentData;
+            const congestion = Math.max(0, (freeFlowSpeed - currentSpeed) / freeFlowSpeed);
+            const baseDb = 50 + (congestion * 45);
+            const newDb = Math.round(baseDb * timeFactor);
+
+            circle.setRadius(getRadius(newDb));
+
+            let circleColor = getColor(newDb);
+            const toggleViolations = document.getElementById('toggle-violations');
+            if (toggleViolations && toggleViolations.checked && newDb > 75) {
+              circleColor = '#a21caf'; // Bright Purple for violation
+            }
+
+            circle.setStyle({ color: circleColor, fillColor: circleColor });
+            hs.db = newDb;
+
+            liveTotalDb += newDb;
+            liveCount++;
+
+            // Update popup
+            circle.getPopup().setContent(`
+              <div style="font-family:'Inter',sans-serif;min-width:180px">
+                <div style="font-weight:700;font-size:14px;margin-bottom:4px">${hs.name}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:${getColor(newDb)};margin:6px 0">${newDb} dB</div>
+                <div style="font-size:12px;color:#888">${hs.type}</div>
+                <div style="font-size:11px;color:#666;margin-top:4px">Level: ${hs.level.toUpperCase()} (Live)</div>
+              </div>
+            `);
+
+            // Update label to show it is live
+            if (labelMarker) {
+              const labelIcon = L.divIcon({
+                className: 'map-db-label live-label',
+                iconSize: [80, 20],
+                iconAnchor: [40, -10],
+                html: `<span style="color:${getColor(newDb)}">📡 ${newDb} dB</span>`,
+              });
+              labelMarker.setIcon(labelIcon);
+            }
+
+            // Update pulsing dot to have a live class
+            if (marker) {
+              const pulseIcon = L.divIcon({
+                className: `pulse-marker ${getPulseClass(hs.level)} live-pulse`,
+                iconSize: [14, 14],
+                html: `<div class="pulse-dot" style="background:${getColor(newDb)}"></div>`,
+              });
+              marker.setIcon(pulseIcon);
+            }
+          } else {
+            console.warn(`No flow data for ${hs.name}:`, data);
+          }
+        } catch (error) {
+          console.error(`Failed to fetch traffic for ${hs.name}:`, error);
+        }
+      } else {
+        // Fallback or non-top hotspots get jitter
+        const jitter = (Math.random() - 0.5) * 4;
+        const baseDb = hs.db + jitter;
+        const newDb = Math.round(Math.max(35, Math.min(98, baseDb * timeFactor)));
+        circle.setRadius(getRadius(newDb));
+        circle.setStyle({ color: getColor(newDb), fillColor: getColor(newDb) });
+        hs.db = newDb;
+      }
+    }
+
+    if (liveCount > 0) {
+      const avgDb = Math.round(liveTotalDb / liveCount);
+      updateForecastChartData(avgDb);
+    }
+  }
+
+  // Initial fetch
+  updateTraffic();
+  // Update every 5 minutes to stay within free tier limits
+  setInterval(updateTraffic, 300000);
+
+  // Time Slider Listener
+  const timeSlider = document.getElementById('time-slider');
+  const timeLabel = document.getElementById('current-time-label');
+  if (timeSlider) {
+    timeSlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      const ampm = val >= 12 ? 'PM' : 'AM';
+      const displayHour = val % 12 === 0 ? 12 : val % 12;
+      if (timeLabel) timeLabel.textContent = `${displayHour}:00 ${ampm}`;
+      updateTraffic(); // Trigger map update
     });
-  }, 4000);
+  }
+
+  // AI Source Filters
+  const sourceFilters = document.querySelectorAll('.source-filter');
+  sourceFilters.forEach(filter => {
+    filter.addEventListener('change', () => {
+      updateFilters();
+    });
+  });
+
+  function updateFilters() {
+    const selectedSources = Array.from(sourceFilters)
+      .filter(f => f.checked)
+      .map(f => f.value);
+
+    for (const { circle, marker, labelMarker, hs } of hotspotMarkers) {
+      const hasSource = hs.sources.some(s => selectedSources.includes(s));
+      if (hasSource) {
+        circle.addTo(liveLayer);
+        marker.addTo(liveLayer);
+        labelMarker.addTo(liveLayer);
+      } else {
+        liveLayer.removeLayer(circle);
+        liveLayer.removeLayer(marker);
+        liveLayer.removeLayer(labelMarker);
+      }
+    }
+  }
+
+  // GIS Overlays
+  const toggleSilence = document.getElementById('toggle-silence');
+  if (toggleSilence) {
+    toggleSilence.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        map.addLayer(vulnLayer);
+      } else {
+        map.removeLayer(vulnLayer);
+      }
+    });
+  }
+
+  const toggleViolations = document.getElementById('toggle-violations');
+  if (toggleViolations) {
+    toggleViolations.addEventListener('change', () => {
+      updateTraffic(); // Re-render to apply violation styles
+    });
+  }
 
   // Fix map rendering when scrolled into view
   const obs = new IntersectionObserver((entries) => {
