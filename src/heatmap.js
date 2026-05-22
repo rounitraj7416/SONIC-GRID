@@ -1,9 +1,31 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { io } from 'socket.io-client';
+import { updateForecastChartData } from './charts.js';
 
 const BANGALORE_CENTER = [12.9716, 77.5946];
 const BANGALORE_ZOOM = 12;
+
+const HOTSPOT_SOURCES = {
+  'Majestic / KSR Station': ['traffic'],
+  'Silk Board Junction': ['traffic'],
+  'MG Road': ['traffic', 'speech'],
+  'KR Market': ['traffic'],
+  'Koramangala': ['traffic', 'speech'],
+  'Indiranagar': ['traffic', 'speech'],
+  'Whitefield': ['traffic', 'construction'],
+  'Marathahalli': ['traffic'],
+  'BTM Layout': ['traffic'],
+  'Hebbal Flyover': ['traffic'],
+  'Yeshwanthpur': ['traffic'],
+  'Jayanagar': ['speech'],
+  'Rajajinagar': ['speech'],
+  'Electronic City': ['traffic'],
+  'Banashankari': ['speech'],
+  'JP Nagar': ['speech'],
+  'Yelahanka': ['speech'],
+  'HSR Layout': ['traffic', 'speech'],
+};
 
 // Audio Context for feedback
 let audioCtx;
@@ -51,9 +73,9 @@ function getColor(db) {
 }
 
 function getRadius(db) {
-  if (db >= 80) return 800;
-  if (db >= 65) return 600;
-  return 450;
+  if (db >= 80) return 1200;
+  if (db >= 65) return 900;
+  return 600;
 }
 
 function getPulseClass(level) {
@@ -155,6 +177,77 @@ export async function initHeatmap() {
     }
   });
 
+  function refreshVisuals() {
+    const timeSlider = document.getElementById('time-slider');
+    let timeFactor = 1.0;
+    if (timeSlider) {
+      const hour = parseInt(timeSlider.value);
+      if (hour < 6 || hour > 22) timeFactor = 0.6;
+      else if (hour < 9 || hour > 18) timeFactor = 0.8;
+    }
+
+    const selectedSources = Array.from(document.querySelectorAll('.source-filter'))
+      .filter(f => f.checked)
+      .map(f => f.value);
+
+    const toggleViolations = document.getElementById('toggle-violations');
+    const violationsChecked = toggleViolations && toggleViolations.checked;
+
+    for (const id in hotspotMarkers) {
+      const item = hotspotMarkers[id];
+      const baseDb = item.baseHs.db;
+      const adjustedDb = Math.round(baseDb * timeFactor);
+
+      const sources = HOTSPOT_SOURCES[item.baseHs.name] || ['speech'];
+      const hasSource = sources.some(s => selectedSources.includes(s));
+
+      if (hasSource) {
+        if (!liveLayer.hasLayer(item.circle)) item.circle.addTo(liveLayer);
+        if (!liveLayer.hasLayer(item.marker)) item.marker.addTo(liveLayer);
+        if (!liveLayer.hasLayer(item.labelMarker)) item.labelMarker.addTo(liveLayer);
+      } else {
+        if (liveLayer.hasLayer(item.circle)) liveLayer.removeLayer(item.circle);
+        if (liveLayer.hasLayer(item.marker)) liveLayer.removeLayer(item.marker);
+        if (liveLayer.hasLayer(item.labelMarker)) liveLayer.removeLayer(item.labelMarker);
+      }
+
+      item.circle.setRadius(getRadius(adjustedDb));
+      const circleColor = (violationsChecked && adjustedDb > 75) ? '#a21caf' : getColor(adjustedDb);
+      item.circle.setStyle({ color: circleColor, fillColor: circleColor });
+
+      const popupHtml = `
+        <div style="font-family:'Inter',sans-serif;min-width:180px">
+          <div style="font-weight:700;font-size:14px;margin-bottom:4px">${item.baseHs.name}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:${circleColor};margin:6px 0">${adjustedDb} dB</div>
+          <div style="font-size:12px;color:#888">${item.baseHs.type || 'Residential'}</div>
+          <div style="font-size:11px;color:#666;margin-top:4px">Level: ${item.baseHs.level.toUpperCase()}</div>
+        </div>
+      `;
+      if (item.circle.isPopupOpen()) {
+        item.circle.setPopupContent(popupHtml);
+      } else {
+        item.circle._popup.setContent(popupHtml);
+      }
+
+      const newPulseIcon = L.divIcon({
+        className: `pulse-marker ${getPulseClass(item.baseHs.level)}`,
+        iconSize: [14, 14],
+        html: `<div class="pulse-dot" style="background:${circleColor}"></div>`,
+      });
+      item.marker.setIcon(newPulseIcon);
+
+      const newLabelIcon = L.divIcon({
+        className: 'map-db-label',
+        iconSize: [60, 20],
+        iconAnchor: [30, -10],
+        html: `<span style="color:${circleColor}">${adjustedDb} dB</span>`,
+      });
+      item.labelMarker.setIcon(newLabelIcon);
+
+      item.hs.db = adjustedDb;
+    }
+  }
+
   socket.on('soundscape_update', (data) => {
     const dashAvg = document.getElementById('dash-city-avg');
     const dashHottest = document.getElementById('dash-hottest');
@@ -165,60 +258,96 @@ export async function initHeatmap() {
     if (dashQuietest) dashQuietest.innerHTML = `${data.metrics.quietestZone.name} &mdash; ${data.metrics.quietestZone.db} dB`;
     if (dashSensors && socket.connected) dashSensors.textContent = data.metrics.activeSensors;
 
+    // Trigger chart update
+    updateForecastChartData(data.metrics.cityAverage);
+
+    const timeSlider = document.getElementById('time-slider');
+    let timeFactor = 1.0;
+    if (timeSlider) {
+      const hour = parseInt(timeSlider.value);
+      if (hour < 6 || hour > 22) timeFactor = 0.6;
+      else if (hour < 9 || hour > 18) timeFactor = 0.8;
+    }
+
+    const selectedSources = Array.from(document.querySelectorAll('.source-filter'))
+      .filter(f => f.checked)
+      .map(f => f.value);
+
+    const toggleViolations = document.getElementById('toggle-violations');
+    const violationsChecked = toggleViolations && toggleViolations.checked;
+
     data.hotspots.forEach(hs => {
+      const sources = HOTSPOT_SOURCES[hs.name] || ['speech'];
+      const hasSource = sources.some(s => selectedSources.includes(s));
+      const adjustedDb = Math.round(hs.db * timeFactor);
+
       if (!hotspotMarkers[hs.id]) {
         const circle = L.circle([hs.lat, hs.lng], {
-          radius: getRadius(hs.db),
-          color: getColor(hs.db),
-          fillColor: getColor(hs.db),
+          radius: getRadius(adjustedDb),
+          color: (violationsChecked && adjustedDb > 75) ? '#a21caf' : getColor(adjustedDb),
+          fillColor: (violationsChecked && adjustedDb > 75) ? '#a21caf' : getColor(adjustedDb),
           fillOpacity: 0.25,
           weight: 1.5,
           opacity: 0.6,
         });
         
         // Add hover sound effect
-        circle.on('mouseover', () => playHoverSound(hs.db));
+        circle.on('mouseover', () => playHoverSound(adjustedDb));
         
         const popupHtml = `
           <div style="font-family:'Inter',sans-serif;min-width:180px">
             <div style="font-weight:700;font-size:14px;margin-bottom:4px">${hs.name}</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:${getColor(hs.db)};margin:6px 0">${hs.db} dB</div>
-            <div style="font-size:12px;color:#888">${hs.type}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:${getColor(adjustedDb)};margin:6px 0">${adjustedDb} dB</div>
+            <div style="font-size:12px;color:#888">${hs.type || 'Residential'}</div>
             <div style="font-size:11px;color:#666;margin-top:4px">Level: ${hs.level.toUpperCase()}</div>
           </div>
         `;
         circle.bindPopup(popupHtml);
-        circle.addTo(liveLayer);
+        
+        if (hasSource) circle.addTo(liveLayer);
 
         const pulseIcon = L.divIcon({
           className: `pulse-marker ${getPulseClass(hs.level)}`,
           iconSize: [14, 14],
-          html: `<div class="pulse-dot" style="background:${getColor(hs.db)}"></div>`,
+          html: `<div class="pulse-dot" style="background:${(violationsChecked && adjustedDb > 75) ? '#a21caf' : getColor(adjustedDb)}"></div>`,
         });
         const marker = L.marker([hs.lat, hs.lng], { icon: pulseIcon });
-        marker.addTo(liveLayer);
+        if (hasSource) marker.addTo(liveLayer);
 
         const labelIcon = L.divIcon({
           className: 'map-db-label',
           iconSize: [60, 20],
           iconAnchor: [30, -10],
-          html: `<span style="color:${getColor(hs.db)}">${hs.db} dB</span>`,
+          html: `<span style="color:${(violationsChecked && adjustedDb > 75) ? '#a21caf' : getColor(adjustedDb)}">${adjustedDb} dB</span>`,
         });
         const labelMarker = L.marker([hs.lat, hs.lng], { icon: labelIcon, interactive: false });
-        labelMarker.addTo(liveLayer);
+        if (hasSource) labelMarker.addTo(liveLayer);
 
-        hotspotMarkers[hs.id] = { circle, marker, labelMarker, hs };
+        hotspotMarkers[hs.id] = { circle, marker, labelMarker, baseHs: hs, hs: { ...hs, db: adjustedDb }, violationsChecked };
       } else {
         const item = hotspotMarkers[hs.id];
-        if (item.hs.db !== hs.db) {
-          item.circle.setRadius(getRadius(hs.db));
-          item.circle.setStyle({ color: getColor(hs.db), fillColor: getColor(hs.db) });
+        item.baseHs = hs; // Update base reference
+
+        if (hasSource) {
+          if (!liveLayer.hasLayer(item.circle)) item.circle.addTo(liveLayer);
+          if (!liveLayer.hasLayer(item.marker)) item.marker.addTo(liveLayer);
+          if (!liveLayer.hasLayer(item.labelMarker)) item.labelMarker.addTo(liveLayer);
+        } else {
+          if (liveLayer.hasLayer(item.circle)) liveLayer.removeLayer(item.circle);
+          if (liveLayer.hasLayer(item.marker)) liveLayer.removeLayer(item.marker);
+          if (liveLayer.hasLayer(item.labelMarker)) liveLayer.removeLayer(item.labelMarker);
+        }
+
+        if (item.hs.db !== adjustedDb || item.violationsChecked !== violationsChecked) {
+          item.circle.setRadius(getRadius(adjustedDb));
+          const circleColor = (violationsChecked && adjustedDb > 75) ? '#a21caf' : getColor(adjustedDb);
+          item.circle.setStyle({ color: circleColor, fillColor: circleColor });
           
           const popupHtml = `
             <div style="font-family:'Inter',sans-serif;min-width:180px">
               <div style="font-weight:700;font-size:14px;margin-bottom:4px">${hs.name}</div>
-              <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:${getColor(hs.db)};margin:6px 0">${hs.db} dB</div>
-              <div style="font-size:12px;color:#888">${hs.type}</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:${circleColor};margin:6px 0">${adjustedDb} dB</div>
+              <div style="font-size:12px;color:#888">${hs.type || 'Residential'}</div>
               <div style="font-size:11px;color:#666;margin-top:4px">Level: ${hs.level.toUpperCase()}</div>
             </div>
           `;
@@ -231,7 +360,7 @@ export async function initHeatmap() {
           const newPulseIcon = L.divIcon({
             className: `pulse-marker ${getPulseClass(hs.level)}`,
             iconSize: [14, 14],
-            html: `<div class="pulse-dot" style="background:${getColor(hs.db)}"></div>`,
+            html: `<div class="pulse-dot" style="background:${circleColor}"></div>`,
           });
           item.marker.setIcon(newPulseIcon);
 
@@ -239,11 +368,12 @@ export async function initHeatmap() {
             className: 'map-db-label',
             iconSize: [60, 20],
             iconAnchor: [30, -10],
-            html: `<span style="color:${getColor(hs.db)}">${hs.db} dB</span>`,
+            html: `<span style="color:${circleColor}">${adjustedDb} dB</span>`,
           });
           item.labelMarker.setIcon(newLabelIcon);
           
-          item.hs = hs;
+          item.hs.db = adjustedDb;
+          item.violationsChecked = violationsChecked;
         }
       }
     });
@@ -309,6 +439,47 @@ export async function initHeatmap() {
       }
       setTimeout(() => map.invalidateSize(), 300);
     });
+  }
+
+  // Time Slider Listener
+  const timeSlider = document.getElementById('time-slider');
+  const timeLabel = document.getElementById('current-time-label');
+  if (timeSlider) {
+    timeSlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      const ampm = val >= 12 ? 'PM' : 'AM';
+      const displayHour = val % 12 === 0 ? 12 : val % 12;
+      if (timeLabel) timeLabel.textContent = `${displayHour}:00 ${ampm}`;
+      refreshVisuals();
+    });
+  }
+
+  // Source Filters Listeners
+  document.querySelectorAll('.source-filter').forEach(filter => {
+    filter.addEventListener('change', refreshVisuals);
+  });
+
+  // Violations Overlay Listener
+  const toggleViolations = document.getElementById('toggle-violations');
+  if (toggleViolations) {
+    toggleViolations.addEventListener('change', refreshVisuals);
+  }
+
+  // Silence Zones Overlay Listener
+  const toggleSilence = document.getElementById('toggle-silence');
+  if (toggleSilence) {
+    toggleSilence.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        map.addLayer(vulnLayer);
+      } else {
+        map.removeLayer(vulnLayer);
+      }
+    });
+  }
+
+  // Initialize overlay layers visibility initially
+  if (toggleSilence && toggleSilence.checked) {
+    vulnLayer.addTo(map);
   }
 
   const obs = new IntersectionObserver((entries) => {

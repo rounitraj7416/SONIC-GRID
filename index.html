@@ -170,6 +170,8 @@
       <div class="heatmap-container" id="heatmap-map"></div>
       <div class="heatmap-panel">
         <h3>Acoustic Dashboard</h3>
+        
+        <!-- Metrics -->
         <div class="panel-metric">
           <span class="pm-label">City Average</span>
           <span class="pm-value text-amber" id="dash-city-avg">68 dB</span>
@@ -190,10 +192,43 @@
           <span class="pm-label">Prediction Window</span>
           <span class="pm-value">Next 90 min</span>
         </div>
+        
+        <!-- AI Source Filters -->
+        <div class="panel-section">
+          <h4>AI Source Filters</h4>
+          <div class="filter-group">
+            <label><input type="checkbox" class="source-filter" value="traffic" checked> 🚗 Traffic</label>
+            <label><input type="checkbox" class="source-filter" value="speech" checked> 🗣️ Speech</label>
+            <label><input type="checkbox" class="source-filter" value="construction" checked> 🏗️ Construction</label>
+          </div>
+        </div>
+
+        <!-- GIS Overlays -->
+        <div class="panel-section">
+          <h4>Compliance Overlays</h4>
+          <div class="filter-group">
+            <label><input type="checkbox" id="toggle-silence" checked> 🏥 Silence Zones</label>
+            <label><input type="checkbox" id="toggle-violations"> ⚠️ Violations</label>
+          </div>
+        </div>
+
+        <!-- Layer Toggles -->
         <div class="layer-toggles">
           <button class="layer-btn active" data-layer="live">🔴 Live</button>
           <button class="layer-btn" data-layer="predict">🟣 Predictive</button>
           <button class="layer-btn" data-layer="vuln">🟡 Vulnerability</button>
+        </div>
+      </div>
+      
+      <!-- Time Slider Module -->
+      <div class="time-slider-container">
+        <div class="slider-header">
+          <h4>Temporal Module</h4>
+          <span id="current-time-label">12:00 PM</span>
+        </div>
+        <input type="range" id="time-slider" min="0" max="24" value="12" class="time-range"/>
+        <div class="time-labels">
+          <span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span>
         </div>
       </div>
     </div>

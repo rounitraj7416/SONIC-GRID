@@ -1,5 +1,7 @@
 import Chart from 'chart.js/auto';
 
+let forecastChart;
+
 export function initCharts() {
   initForecastChart();
   initEventFeed();
@@ -18,7 +20,7 @@ function initForecastChart() {
   const actual = [62, 65, 71, null, null, null, null];
   const predicted = [null, null, 71, 78, 84, 76, 68];
 
-  new Chart(canvas, {
+  forecastChart = new Chart(canvas, {
     type: 'line',
     data: {
       labels,
@@ -116,4 +118,16 @@ function initEventFeed() {
       feed.removeChild(feed.lastChild);
     }
   }, 4000);
+}
+
+export function updateForecastChartData(newValue) {
+  if (forecastChart) {
+    if (Array.isArray(newValue)) {
+      forecastChart.data.datasets[0].data = newValue;
+    } else {
+      // Update the 'Now' value (index 0)
+      forecastChart.data.datasets[0].data[0] = newValue;
+    }
+    forecastChart.update();
+  }
 }
