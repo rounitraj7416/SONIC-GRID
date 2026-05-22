@@ -4,6 +4,7 @@ import { initAnimations } from './animations.js';
 import { initHeatmap } from './heatmap.js';
 import { initCharts } from './charts.js';
 import { initPlanner } from './planner.js';
+import { initDemo3D } from './demo3d.js';
 
 // ---- Typewriter ----
 function typewriter(el, text, speed = 35) {
@@ -74,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeatmap();
   initCharts();
   initPlanner();
+  initDemo3D();
   initAnimations();
 
   // Typewriter

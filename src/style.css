@@ -1,6 +1,7 @@
-/* ==========================================
-   SONICGRID AI — Design System & Global Styles
-   ========================================== */
+/* =========================================
+   SONICGRID UI - Liquid Glass Theme
+   ========================================= */
+@import './demo3d.css';
 
 /* ---------- Tokens ---------- */
 :root {
@@ -125,7 +126,12 @@ input{font-family:inherit}
 
 /* ---------- HEATMAP ---------- */
 .heatmap{background:var(--bg-secondary);padding-bottom:80px}
-.heatmap-wrapper{display:grid;grid-template-columns:1fr 320px;gap:24px;max-width:1200px;margin:0 auto;padding:0 24px}
+.heatmap-wrapper{display:grid;grid-template-columns:1fr 320px;gap:24px;max-width:1200px;margin:0 auto;padding:0 24px;position:relative}
+.heatmap-wrapper.is-fullscreen{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:var(--bg-primary);margin:0;padding:20px;max-width:none;grid-template-columns:1fr 320px}
+.heatmap-wrapper.is-fullscreen .heatmap-container{height:calc(100vh - 40px)!important;min-height:auto}
+.fullscreen-btn{position:absolute;top:20px;right:360px;z-index:1000;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-primary);padding:8px 12px;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:.8rem;backdrop-filter:blur(10px);cursor:pointer;transition:var(--transition)}
+.heatmap-wrapper.is-fullscreen .fullscreen-btn{right:360px}
+.fullscreen-btn:hover{background:var(--glass-hover);border-color:var(--accent-cyan);color:var(--accent-cyan)}
 .heatmap-container{position:relative;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--glass-border);min-height:520px;background:#0a0a14;z-index:1}
 .heatmap-container .leaflet-container{background:#0a0a14!important}
 .heatmap-panel{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:28px 24px;backdrop-filter:blur(12px);height:fit-content}

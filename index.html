@@ -165,25 +165,26 @@
       <h2 class="section-title">See Bangalore's <span class="gradient-text">Soundscape</span></h2>
       <p class="section-desc">Real-time acoustic intelligence across the city — with predictive overlays.</p>
     </div>
-    <div class="heatmap-wrapper">
+    <div class="heatmap-wrapper" id="heatmap-wrapper">
+      <button id="fullscreen-btn" class="fullscreen-btn">⛶ Fullscreen</button>
       <div class="heatmap-container" id="heatmap-map"></div>
       <div class="heatmap-panel">
         <h3>Acoustic Dashboard</h3>
         <div class="panel-metric">
           <span class="pm-label">City Average</span>
-          <span class="pm-value text-amber">68 dB</span>
+          <span class="pm-value text-amber" id="dash-city-avg">68 dB</span>
         </div>
         <div class="panel-metric">
           <span class="pm-label">Hottest Zone</span>
-          <span class="pm-value text-rose">Majestic — 89 dB</span>
+          <span class="pm-value text-rose" id="dash-hottest">Majestic — 89 dB</span>
         </div>
         <div class="panel-metric">
           <span class="pm-label">Quietest Zone</span>
-          <span class="pm-value text-emerald">Jayanagar — 42 dB</span>
+          <span class="pm-value text-emerald" id="dash-quietest">Jayanagar — 42 dB</span>
         </div>
         <div class="panel-metric">
           <span class="pm-label">Active Sensors</span>
-          <span class="pm-value text-cyan">342</span>
+          <span class="pm-value text-cyan" id="dash-sensors">342</span>
         </div>
         <div class="panel-metric">
           <span class="pm-label">Prediction Window</span>
@@ -364,67 +365,72 @@
     <div class="container">
       <div class="section-label">Live Scenario</div>
       <h2 class="section-title">Watch It <span class="gradient-text">In Action</span></h2>
-      <p class="section-desc">A concert + traffic surge hits downtown Bangalore. See how SONICGRID responds.</p>
-      <div class="demo-timeline">
-        <div class="timeline-line"></div>
-        <div class="timeline-step" data-step="1">
-          <div class="ts-marker">1</div>
-          <div class="ts-content">
-            <div class="ts-time">T+0 min</div>
-            <h3>🎵 Concert Begins Downtown</h3>
-            <p>Acoustic sensors detect rising noise levels near MG Road. Sound signatures classify live music + crowd noise.</p>
-            <div class="ts-metric">Noise Level: <span class="text-amber">72 dB → 81 dB</span></div>
-          </div>
-        </div>
-        <div class="timeline-step" data-step="2">
-          <div class="ts-marker">2</div>
-          <div class="ts-content">
-            <div class="ts-time">T+8 min</div>
-            <h3>🚗 Traffic Surge Detected</h3>
-            <p>Horn signature clusters spike. Traffic congestion compounds the acoustic stress around the venue.</p>
-            <div class="ts-metric">Horn Events: <span class="text-rose">+340% above baseline</span></div>
-          </div>
-        </div>
-        <div class="timeline-step" data-step="3">
-          <div class="ts-marker">3</div>
-          <div class="ts-content">
-            <div class="ts-time">T+12 min</div>
-            <h3>🏥 Vulnerability Alert</h3>
-            <p>Nearby hospital (800m) flagged. Sleep disruption probability for residential zones rises to critical.</p>
-            <div class="ts-metric">Hospital Proximity: <span class="text-rose">CRITICAL</span></div>
-          </div>
-        </div>
-        <div class="timeline-step" data-step="4">
-          <div class="ts-marker">4</div>
-          <div class="ts-content">
-            <div class="ts-time">T+14 min</div>
-            <h3>🧠 AI Prediction</h3>
-            <p>"Noise threshold breach in 18 minutes. Estimated peak: 94 dB. Impact radius: 1.2 km."</p>
-            <div class="ts-metric">Confidence: <span class="gradient-text">96.2%</span></div>
-          </div>
-        </div>
-        <div class="timeline-step" data-step="5">
-          <div class="ts-marker">5</div>
-          <div class="ts-content">
-            <div class="ts-time">T+15 min</div>
-            <h3>⚡ System Responds</h3>
-            <p>Heavy vehicles rerouted via Residency Road. Quiet zone signage activates. 2,847 residents receive mobile alerts.</p>
-            <div class="ts-metric">Interventions: <span class="text-emerald">3 ACTIVE</span></div>
-          </div>
-        </div>
-        <div class="timeline-step" data-step="6">
-          <div class="ts-marker final">✓</div>
-          <div class="ts-content">
-            <div class="ts-time">T+45 min</div>
-            <h3>📊 Outcome</h3>
-            <p>Peak noise reduced by 18 dB. Hospital zone stayed under threshold. Zero sleep disruption complaints.</p>
-            <div class="demo-results">
-              <div class="result-item"><span class="result-val text-emerald">-18 dB</span><span>Peak Reduction</span></div>
-              <div class="result-item"><span class="result-val text-emerald">100%</span><span>Hospital Protected</span></div>
-              <div class="result-item"><span class="result-val text-cyan">2,847</span><span>Citizens Alerted</span></div>
-              <div class="result-item"><span class="result-val text-emerald">0</span><span>Complaints Filed</span></div>
+      <p class="section-desc">A concert + traffic surge hits downtown Bangalore. See how SONICGRID responds in full 3D.</p>
+      <div class="demo-layout">
+        <div class="demo-timeline" id="demo-timeline">
+          <div class="timeline-line"></div>
+          <div class="timeline-step" data-step="0" id="ts-0">
+            <div class="ts-marker">1</div>
+            <div class="ts-content">
+              <div class="ts-time">T+0 min</div>
+              <h3>🎵 Concert Begins Downtown</h3>
+              <p>Acoustic sensors detect rising noise levels near MG Road. Sound signatures classify live music + crowd noise.</p>
+              <div class="ts-metric">Noise Level: <span class="text-amber">72 dB → 81 dB</span></div>
             </div>
           </div>
+          <div class="timeline-step" data-step="1" id="ts-1">
+            <div class="ts-marker">2</div>
+            <div class="ts-content">
+              <div class="ts-time">T+8 min</div>
+              <h3>🚗 Traffic Surge Detected</h3>
+              <p>Horn signature clusters spike. Traffic congestion compounds the acoustic stress around the venue.</p>
+              <div class="ts-metric">Horn Events: <span class="text-rose">+340% above baseline</span></div>
+            </div>
+          </div>
+          <div class="timeline-step" data-step="2" id="ts-2">
+            <div class="ts-marker">3</div>
+            <div class="ts-content">
+              <div class="ts-time">T+12 min</div>
+              <h3>🏥 Vulnerability Alert</h3>
+              <p>Nearby hospital (800m) flagged. Sleep disruption probability for residential zones rises to critical.</p>
+              <div class="ts-metric">Hospital Proximity: <span class="text-rose">CRITICAL</span></div>
+            </div>
+          </div>
+          <div class="timeline-step" data-step="3" id="ts-3">
+            <div class="ts-marker">4</div>
+            <div class="ts-content">
+              <div class="ts-time">T+14 min</div>
+              <h3>🧠 AI Prediction</h3>
+              <p>"Noise threshold breach in 18 minutes. Estimated peak: 94 dB. Impact radius: 1.2 km."</p>
+              <div class="ts-metric">Confidence: <span class="gradient-text">96.2%</span></div>
+            </div>
+          </div>
+          <div class="timeline-step" data-step="4" id="ts-4">
+            <div class="ts-marker">5</div>
+            <div class="ts-content">
+              <div class="ts-time">T+15 min</div>
+              <h3>⚡ System Responds</h3>
+              <p>Heavy vehicles rerouted via Residency Road. Quiet zone signage activates. 2,847 residents receive mobile alerts.</p>
+              <div class="ts-metric">Interventions: <span class="text-emerald">3 ACTIVE</span></div>
+            </div>
+          </div>
+          <div class="timeline-step" data-step="5" id="ts-5">
+            <div class="ts-marker final">✓</div>
+            <div class="ts-content">
+              <div class="ts-time">T+45 min</div>
+              <h3>📊 Outcome</h3>
+              <p>Peak noise reduced by 18 dB. Hospital zone stayed under threshold. Zero sleep disruption complaints.</p>
+              <div class="demo-results">
+                <div class="result-item"><span class="result-val text-emerald">-18 dB</span><span>Peak Reduction</span></div>
+                <div class="result-item"><span class="result-val text-emerald">100%</span><span>Hospital Protected</span></div>
+                <div class="result-item"><span class="result-val text-cyan">2,847</span><span>Citizens Alerted</span></div>
+                <div class="result-item"><span class="result-val text-emerald">0</span><span>Complaints Filed</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-3d-container" id="demo-3d">
+          <!-- Three.js will render here -->
         </div>
       </div>
     </div>
