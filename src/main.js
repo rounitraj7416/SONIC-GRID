@@ -7,6 +7,7 @@ import { initPlanner } from './planner.js';
 import { initReporter } from './reporter.js';
 import { initHealthScore } from './healthScore.js';
 import { initDashboard } from './dashboard.js';
+import { initDemo3D } from './demo3d.js';
 
 // ---- Typewriter ----
 function typewriter(el, text, speed = 35) {
@@ -30,7 +31,7 @@ function animateCounters() {
       const eased = 1 - Math.pow(1 - p, 3);
       const val = Math.floor(eased * target);
       const formattedVal = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(val);
-      el.textContent = formattedVal + (suffix ? suffix : '');
+      el.textContent = formattedVal + (suffix ? ' ' + suffix : '');
       if (p < 1) requestAnimationFrame(update);
     }
     requestAnimationFrame(update);
@@ -82,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initReporter();
   initHealthScore();
   initDashboard();
+  initDemo3D();
 
   // Typewriter
   const tw = document.getElementById('hero-typewriter');
