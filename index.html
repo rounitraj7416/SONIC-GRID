@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SONICGRID AI — Real-Time Urban Acoustic Intelligence</title>
+  <meta name="description" content="SONICGRID transforms cities from passive listeners into adaptive acoustic ecosystems that predict, prevent, and heal urban noise pollution in real time." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="main-nav" class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <span class="logo-icon">◉</span>
+        <span class="logo-text">SONIC<span class="logo-highlight">GRID</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="#problem">Problem</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#heatmap">Live Map</a>
+        <a href="#ai-engine">AI Engine</a>
+        <a href="#interventions">Interventions</a>
+        <a href="#home-planner">Home Planner</a>
+        <a href="#demo">Demo</a>
+        <a href="#dashboard">City Dashboard</a>
+      </div>
+      <a href="#demo" class="nav-cta">Watch Demo</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero" class="section hero">
+    <canvas id="particle-canvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge">🔊 Real-Time Urban Acoustic Intelligence</div>
+      <h1 class="hero-title">
+        <span class="title-line">The <span class="gradient-text">Pulse</span></span>
+        <span class="title-line">of Your <span class="gradient-text-alt">City</span></span>
+      </h1>
+      <p class="hero-subtitle" id="hero-typewriter"></p>
+      
+      <a href="#heatmap" class="acoustic-health-kpi" id="hero-health-kpi">
+        <div class="ah-kpi-left">
+          <div class="ah-kpi-title">Bangalore Today</div>
+          <div class="ah-kpi-score">
+            <span class="ah-score-num">61</span><span class="ah-score-max">/100</span>
+          </div>
+          <div class="ah-kpi-status status-moderate">Moderate Acoustic Stress</div>
+        </div>
+        <div class="ah-kpi-right">
+          <div class="ah-chart-label">7-Day Trend</div>
+          <div class="ah-sparkline-wrapper">
+            <canvas id="health-sparkline"></canvas>
+          </div>
+        </div>
+      </a>
+
+      <div class="hero-ctas">
+        <a href="#heatmap" class="btn btn-primary" id="hero-cta">
+          <span>Explore Live Map</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#demo" class="btn btn-ghost">Watch Demo</a>
+      </div>
+      <div class="hero-metrics">
+        <div class="metric-card">
+          <span class="metric-value" data-target="847" data-suffix="">0</span>
+          <span class="metric-label">Active Nodes</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-value" data-target="62" data-suffix="dB">0</span>
+          <span class="metric-label">Avg City Level</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-value" data-target="23" data-suffix="">0</span>
+          <span class="metric-label">Predictions/min</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-wave"></div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section id="problem" class="section problem">
+    <div class="container">
+      <div class="section-label">The Crisis</div>
+      <h2 class="section-title">Cities Are Getting <span class="text-rose">Louder</span></h2>
+      <p class="section-desc">Urban noise isn't just annoying — it's a public health emergency hiding in plain sound.</p>
+      <div class="problem-grid">
+        <div class="stat-card" data-animate>
+          <div class="stat-number" data-target="1000000000" data-suffix="+">0</div>
+          <div class="stat-text">People exposed to harmful noise levels worldwide</div>
+        </div>
+        <div class="stat-card" data-animate>
+          <div class="stat-number" data-target="12000" data-suffix="">0</div>
+          <div class="stat-text">Premature deaths annually in Europe from noise</div>
+        </div>
+        <div class="stat-card" data-animate>
+          <div class="stat-number" data-target="48000" data-suffix="">0</div>
+          <div class="stat-text">New cases of heart disease from noise exposure yearly</div>
+        </div>
+        <div class="stat-card" data-animate>
+          <div class="stat-number" data-target="6500000" data-suffix="">0</div>
+          <div class="stat-text">People suffering chronic sleep disturbance from noise</div>
+        </div>
+      </div>
+      <div class="problem-visual">
+        <div class="noise-bar-chart">
+          <div class="noise-bar" data-height="30" data-label="1980" data-db="55dB"></div>
+          <div class="noise-bar" data-height="42" data-label="1990" data-db="61dB"></div>
+          <div class="noise-bar" data-height="55" data-label="2000" data-db="67dB"></div>
+          <div class="noise-bar" data-height="68" data-label="2010" data-db="72dB"></div>
+          <div class="noise-bar" data-height="82" data-label="2020" data-db="78dB"></div>
+          <div class="noise-bar danger" data-height="95" data-label="2030" data-db="85dB+"></div>
+        </div>
+        <p class="chart-caption">Average Peak Urban Noise Levels (dB) — Growing Every Decade</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works" class="section howitworks">
+    <div class="container">
+      <div class="section-label">Architecture</div>
+      <h2 class="section-title">How <span class="gradient-text">SONICGRID</span> Works</h2>
+      <p class="section-desc">A privacy-first acoustic mesh that senses, thinks, and acts — all in real time.</p>
+      <div class="steps-grid">
+        <div class="step-card" data-step="01">
+          <div class="step-icon">📱</div>
+          <h3>Edge AI Collection</h3>
+          <p>Smartphones, IoT sensors, and smart poles extract acoustic features on-device. Raw audio is never uploaded — only anonymized metrics.</p>
+          <div class="step-tags">
+            <span class="tag">On-Device ML</span>
+            <span class="tag">TinyML</span>
+            <span class="tag">Privacy-First</span>
+          </div>
+        </div>
+        <div class="step-connector"><div class="connector-line"></div></div>
+        <div class="step-card" data-step="02">
+          <div class="step-icon">🔒</div>
+          <h3>Privacy Processing</h3>
+          <p>Federated learning, differential privacy, and acoustic fingerprint hashing ensure zero speech reconstruction. Geo-fuzzing protects locations.</p>
+          <div class="step-tags">
+            <span class="tag">Federated Learning</span>
+            <span class="tag">Differential Privacy</span>
+            <span class="tag">Geo-Fuzzing</span>
+          </div>
+        </div>
+        <div class="step-connector"><div class="connector-line"></div></div>
+        <div class="step-card" data-step="03">
+          <div class="step-icon">🧠</div>
+          <h3>AI Prediction Engine</h3>
+          <p>Graph Neural Networks fuse acoustic data with traffic, weather, and event calendars to predict noise hotspots 30–120 minutes ahead.</p>
+          <div class="step-tags">
+            <span class="tag">GNN</span>
+            <span class="tag">Temporal ML</span>
+            <span class="tag">Real-Time</span>
+          </div>
+        </div>
+        <div class="step-connector"><div class="connector-line"></div></div>
+        <div class="step-card" data-step="04">
+          <div class="step-icon">⚡</div>
+          <h3>Automated Response</h3>
+          <p>The system doesn't just report — it acts. Traffic rerouting, quiet zone activation, and citizen alerts deploy automatically.</p>
+          <div class="step-tags">
+            <span class="tag">Smart Signals</span>
+            <span class="tag">Citizen Alerts</span>
+            <span class="tag">Quiet Zones</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HEATMAP -->
+  <section id="heatmap" class="section heatmap">
+    <div class="container">
+      <div class="section-label">Live Intelligence</div>
+      <h2 class="section-title">See Bangalore's <span class="gradient-text">Soundscape</span></h2>
+      <p class="section-desc">Real-time acoustic intelligence across the city — with predictive overlays.</p>
+    </div>
+    <div class="heatmap-wrapper">
+      <div class="heatmap-container" id="heatmap-map"></div>
+      <div class="heatmap-panel">
+        <h3>Acoustic Dashboard</h3>
+        
+        <!-- Metrics -->
+        <div class="panel-metric">
+          <span class="pm-label">City Average</span>
+          <span class="pm-value text-amber" id="city-avg-db">68 dB</span>
+        </div>
+        <div class="panel-metric">
+          <span class="pm-label">Hottest Zone</span>
+          <span class="pm-value text-rose">Majestic — 89 dB</span>
+        </div>
+        
+        <!-- AI Source Filters -->
+        <div class="panel-section">
+          <h4>AI Source Filters</h4>
+          <div class="filter-group">
+            <label><input type="checkbox" class="source-filter" value="traffic" checked> 🚗 Traffic</label>
+            <label><input type="checkbox" class="source-filter" value="speech" checked> 🗣️ Speech</label>
+            <label><input type="checkbox" class="source-filter" value="construction" checked> 🏗️ Construction</label>
+          </div>
+        </div>
+
+        <!-- GIS Overlays -->
+        <div class="panel-section">
+          <h4>Compliance Overlays</h4>
+          <div class="filter-group">
+            <label><input type="checkbox" id="toggle-silence" checked> 🏥 Silence Zones</label>
+            <label><input type="checkbox" id="toggle-violations"> ⚠️ Violations</label>
+          </div>
+        </div>
+
+        <!-- Heatmap Controls -->
+        <div class="panel-section" id="heatmap-controls" style="display: none;">
+          <h4>Heatmap Intensity</h4>
+          <div class="filter-group">
+            <input type="range" id="heatmap-intensity" min="10" max="100" value="60" class="form-range" style="margin-top: 4px;"/>
+          </div>
+        </div>
+
+        <!-- Layer Toggles -->
+        <div class="layer-toggles">
+          <button class="layer-btn active" data-layer="live">🔴 Live</button>
+          <button class="layer-btn" data-layer="predict">🟣 Predictive</button>
+          <button class="layer-btn" data-layer="vuln">🟡 Vulnerability</button>
+          <button class="layer-btn" data-layer="heat">🌈 Heatmap</button>
+        </div>
+      </div>
+      
+      <!-- Time Slider Module -->
+      <div class="time-slider-container">
+        <div class="slider-header">
+          <div class="temporal-controls">
+            <h4>Temporal Module</h4>
+            <div class="playback-controls">
+              <button id="play-btn" class="playback-btn">▶</button>
+              <select id="speed-select" class="speed-select">
+                <option value="1">1x</option>
+                <option value="2">2x</option>
+                <option value="4">4x</option>
+              </select>
+            </div>
+          </div>
+          <span id="current-time-label">12:00 PM</span>
+        </div>
+        <input type="range" id="time-slider" min="0" max="24" value="12" class="time-range"/>
+        <div class="time-labels">
+          <span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI ENGINE -->
+  <section id="ai-engine" class="section ai-engine">
+    <div class="container">
+      <div class="section-label">Intelligence</div>
+      <h2 class="section-title">Predict. Detect. <span class="gradient-text-alt">Protect.</span></h2>
+      <p class="section-desc">A multi-model AI stack that understands urban sound at city scale.</p>
+      <div class="ai-grid">
+        <div class="ai-card">
+          <div class="ai-card-header">
+            <span class="ai-icon">📈</span>
+            <h3>Noise Forecasting</h3>
+          </div>
+          <p>Predicts future hotspots using temporal ML, traffic patterns, weather, and event calendars.</p>
+          <div class="mini-chart" id="forecast-chart"></div>
+          <div class="ai-card-footer">
+            <span class="tag">GNN</span><span class="tag">Temporal ML</span><span class="tag">30-120min</span>
+          </div>
+        </div>
+        <div class="ai-card">
+          <div class="ai-card-header">
+            <span class="ai-icon">🎯</span>
+            <h3>Event Detection</h3>
+          </div>
+          <p>Classifies acoustic events in real time — from construction to illegal racing.</p>
+          <div class="event-feed" id="event-feed">
+            <div class="event-item">
+              <span class="event-dot dot-red"></span><span class="event-title">Heavy Traffic — MG Road</span><span class="event-conf conf-high">91%</span><span class="event-time">2s ago</span>
+              <div class="event-popup"><p>Classified based on frequency pattern + location context + time of day.</p></div>
+            </div>
+            <div class="event-item">
+              <span class="event-dot dot-amber"></span><span class="event-title">Construction — Whitefield</span><span class="event-conf conf-med">78%</span><span class="event-time">8s ago</span>
+              <div class="event-popup"><p>Classified based on frequency pattern + location context + time of day.</p></div>
+            </div>
+            <div class="event-item">
+              <span class="event-dot dot-red"></span><span class="event-title">Honking Cluster — Majestic</span><span class="event-conf conf-high">94%</span><span class="event-time">15s ago</span>
+              <div class="event-popup"><p>Classified based on frequency pattern + location context + time of day.</p></div>
+            </div>
+            <div class="event-item">
+              <span class="event-dot dot-cyan"></span><span class="event-title">Siren Detected — Koramangala</span><span class="event-conf conf-low">55%</span><span class="event-time">22s ago</span>
+              <div class="event-popup"><p>Classified based on frequency pattern + location context + time of day.</p></div>
+            </div>
+          </div>
+          <div class="ai-card-footer">
+            <span class="tag">YAMNet</span><span class="tag">Whisper</span><span class="tag">TinyML</span>
+          </div>
+        </div>
+        <div class="ai-card">
+          <div class="ai-card-header">
+            <span class="ai-icon">💚</span>
+            <h3>Urban Stress Index</h3>
+          </div>
+          <p>Fuses noise, AQI, crowd density, heat, and sleep data into a Human Comfort Score.</p>
+          <div class="comfort-gauge" id="comfort-gauge">
+            <div class="gauge-ring">
+              <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="gauge-bg"/><circle cx="60" cy="60" r="52" class="gauge-fill" style="--progress:0.64"/></svg>
+              <div class="gauge-value">64</div>
+            </div>
+            <div class="gauge-label">Human Comfort Score</div>
+          </div>
+          <div class="ai-card-footer">
+            <span class="tag">Multi-Modal</span><span class="tag">City KPI</span>
+          </div>
+        </div>
+        <div class="ai-card">
+          <div class="ai-card-header">
+            <span class="ai-icon">📊</span>
+            <h3>Source Breakdown</h3>
+          </div>
+          <p>Real-time composition of city acoustic footprint.</p>
+          <div class="mini-chart" id="source-donut-chart" style="height: 150px; max-height: 150px; background: transparent;"></div>
+          <div class="ai-card-footer" style="margin-top: auto; padding-top: 15px;">
+            <label class="zdp-alert" style="width: 100%; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem;">
+              <input type="checkbox" id="donut-time-toggle" style="accent-color: var(--accent-cyan); cursor: pointer;"> vs. yesterday at this time
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERVENTIONS -->
+  <section id="interventions" class="section interventions">
+    <div class="container">
+      <div class="section-label">Action System</div>
+      <h2 class="section-title">Beyond <span class="text-rose">Dashboards</span></h2>
+      <p class="section-desc">Most solutions measure noise. SONICGRID intervenes.</p>
+      <div class="intervention-grid">
+        <div class="intervention-card" data-animate>
+          <div class="iv-number">01</div>
+          <div class="iv-icon">🚦</div>
+          <h3>Adaptive Traffic Rerouting</h3>
+          <p>AI communicates with traffic APIs and smart signals to reroute heavy vehicles, reduce congestion pressure, and stagger traffic waves.</p>
+        </div>
+        <div class="intervention-card" data-animate>
+          <div class="iv-number">02</div>
+          <div class="iv-icon">🤫</div>
+          <h3>Dynamic Quiet Zones</h3>
+          <p>Smart signage automatically activates quiet hours, reduced speed limits, and no-horn corridors based on real-time acoustic stress.</p>
+        </div>
+        <div class="intervention-card" data-animate>
+          <div class="iv-number">03</div>
+          <div class="iv-icon">📲</div>
+          <h3>Personalized Citizen Alerts</h3>
+          <p>"Noise near your home will exceed sleep thresholds at 1:20 AM." Suggestions include alternate routes, best sleep windows, and quiet workspaces.</p>
+        </div>
+        <div class="intervention-card" data-animate>
+          <div class="iv-number">04</div>
+          <div class="iv-icon">🛡️</div>
+          <h3>Acoustic Shields</h3>
+          <p>Directional speakers and phase-cancellation emitters on construction sites dynamically reduce outward sound propagation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIET HOME PLANNER -->
+  <section id="home-planner" class="section home-planner">
+    <div class="container">
+      <div class="section-label">Smart Living</div>
+      <h2 class="section-title">Find Your <span class="gradient-text">Quiet Home</span></h2>
+      <p class="section-desc">Use acoustic intelligence to discover the best noise-free neighborhoods in Bangalore for your dream home.</p>
+      <div class="planner-layout">
+        <div class="planner-form">
+          <h3>🏠 Your Preferences</h3>
+          <div class="form-group">
+            <label for="planner-budget">Budget Range</label>
+            <select id="planner-budget" class="form-select">
+              <option value="any">Any Budget</option>
+              <option value="affordable">₹30L – ₹60L</option>
+              <option value="mid">₹60L – ₹1.2Cr</option>
+              <option value="premium">₹1.2Cr – ₹2.5Cr</option>
+              <option value="luxury">₹2.5Cr+</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="planner-noise">Max Noise Tolerance</label>
+            <div class="slider-group">
+              <input type="range" id="planner-noise" min="30" max="80" value="50" class="form-range"/>
+              <span class="range-val" id="noise-val">50 dB</span>
+            </div>
+            <div class="noise-scale">
+              <span class="ns-quiet">🤫 Library</span>
+              <span class="ns-moderate">🗣️ Office</span>
+              <span class="ns-loud">🚗 Traffic</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="planner-work">Workplace Area</label>
+            <select id="planner-work" class="form-select">
+              <option value="any">Anywhere</option>
+              <option value="central">Central Bangalore</option>
+              <option value="whitefield">Whitefield / ITPL</option>
+              <option value="ecity">Electronic City</option>
+              <option value="manyata">Manyata Tech Park</option>
+              <option value="outer">Outer Ring Road</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Priorities</label>
+            <div class="priority-chips">
+              <button class="chip active" data-priority="quiet">🤫 Ultra Quiet</button>
+              <button class="chip" data-priority="schools">🏫 Near Schools</button>
+              <button class="chip" data-priority="parks">🌳 Green Spaces</button>
+              <button class="chip" data-priority="transit">🚇 Metro Access</button>
+              <button class="chip" data-priority="hospital">🏥 Near Hospital</button>
+              <button class="chip" data-priority="market">🛒 Markets Nearby</button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-full" id="planner-search">
+            <span>🔍 Find Quiet Neighborhoods</span>
+          </button>
+        </div>
+        <div class="planner-results" id="planner-results">
+          <div class="results-placeholder">
+            <div class="placeholder-icon">🏡</div>
+            <p>Configure your preferences and click <strong>"Find Quiet Neighborhoods"</strong> to discover your ideal location.</p>
+          </div>
+        </div>
+      </div>
+      <div class="planner-map-section">
+        <h3 class="planner-map-title">📍 Recommended Quiet Zones</h3>
+        <div class="planner-map-container" id="planner-map"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO SCENARIO -->
+  <section id="demo" class="section demo">
+    <div class="container">
+      <div class="section-label">Live Scenario</div>
+      <h2 class="section-title">Watch It <span class="gradient-text">In Action</span></h2>
+      <p class="section-desc">A concert + traffic surge hits downtown Bangalore. See how SONICGRID responds.</p>
+      <div class="demo-timeline">
+        <div class="timeline-line"></div>
+        <div class="timeline-step" data-step="1">
+          <div class="ts-marker">1</div>
+          <div class="ts-content">
+            <div class="ts-time">T+0 min</div>
+            <h3>🎵 Concert Begins Downtown</h3>
+            <p>Acoustic sensors detect rising noise levels near MG Road. Sound signatures classify live music + crowd noise.</p>
+            <div class="ts-metric">Noise Level: <span class="text-amber">72 dB → 81 dB</span></div>
+          </div>
+        </div>
+        <div class="timeline-step" data-step="2">
+          <div class="ts-marker">2</div>
+          <div class="ts-content">
+            <div class="ts-time">T+8 min</div>
+            <h3>🚗 Traffic Surge Detected</h3>
+            <p>Horn signature clusters spike. Traffic congestion compounds the acoustic stress around the venue.</p>
+            <div class="ts-metric">Horn Events: <span class="text-rose">+340% above baseline</span></div>
+          </div>
+        </div>
+        <div class="timeline-step" data-step="3">
+          <div class="ts-marker">3</div>
+          <div class="ts-content">
+            <div class="ts-time">T+12 min</div>
+            <h3>🏥 Vulnerability Alert</h3>
+            <p>Nearby hospital (800m) flagged. Sleep disruption probability for residential zones rises to critical.</p>
+            <div class="ts-metric">Hospital Proximity: <span class="text-rose">CRITICAL</span></div>
+          </div>
+        </div>
+        <div class="timeline-step" data-step="4">
+          <div class="ts-marker">4</div>
+          <div class="ts-content">
+            <div class="ts-time">T+14 min</div>
+            <h3>🧠 AI Prediction</h3>
+            <p>"Noise threshold breach in 18 minutes. Estimated peak: 94 dB. Impact radius: 1.2 km."</p>
+            <div class="ts-metric">Confidence: <span class="gradient-text">96.2%</span></div>
+          </div>
+        </div>
+        <div class="timeline-step" data-step="5">
+          <div class="ts-marker">5</div>
+          <div class="ts-content">
+            <div class="ts-time">T+15 min</div>
+            <h3>⚡ System Responds</h3>
+            <p>Heavy vehicles rerouted via Residency Road. Quiet zone signage activates. 2,847 residents receive mobile alerts.</p>
+            <div class="ts-metric">Interventions: <span class="text-emerald">3 ACTIVE</span></div>
+          </div>
+        </div>
+        <div class="timeline-step" data-step="6">
+          <div class="ts-marker final">✓</div>
+          <div class="ts-content">
+            <div class="ts-time">T+45 min</div>
+            <h3>📊 Outcome</h3>
+            <p>Peak noise reduced by 18 dB. Hospital zone stayed under threshold. Zero sleep disruption complaints.</p>
+            <div class="demo-results">
+              <div class="result-item"><span class="result-val text-emerald">-18 dB</span><span>Peak Reduction</span></div>
+              <div class="result-item"><span class="result-val text-emerald">100%</span><span>Hospital Protected</span></div>
+              <div class="result-item"><span class="result-val text-cyan">2,847</span><span>Citizens Alerted</span></div>
+              <div class="result-item"><span class="result-val text-emerald">0</span><span>Complaints Filed</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CITY DASHBOARD -->
+  <section id="dashboard" class="section dashboard">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">City <span class="gradient-text">Dashboard</span></h2>
+        <p class="section-subtitle">Policy & Compliance Metrics for Urban Planners</p>
+      </div>
+
+      <div class="dashboard-controls" style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+        <button class="btn btn-primary" id="btn-export-report">
+          <span>📄 Export PDF Report</span>
+        </button>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="dashboard-metrics">
+        <div class="metric-card-gov">
+          <div class="mcg-label">Total Violations (7d)</div>
+          <div class="mcg-value">4,192</div>
+          <div class="mcg-trend trend-down">▼ 12% vs last week</div>
+        </div>
+        <div class="metric-card-gov">
+          <div class="mcg-label">Complaints Resolved</div>
+          <div class="mcg-value text-emerald">89.4%</div>
+          <div class="mcg-trend trend-up">▲ 4% vs last week</div>
+        </div>
+        <div class="metric-card-gov">
+          <div class="mcg-label">Intervention Efficacy</div>
+          <div class="mcg-value text-cyan">76%</div>
+          <div class="mcg-trend trend-up">Reduced peak by >5dB</div>
+        </div>
+        <div class="metric-card-gov">
+          <div class="mcg-label">Top Non-Compliant Zone</div>
+          <div class="mcg-value" style="font-size: 1.5rem; margin-top: 5px;">ORR Junction</div>
+          <div class="mcg-trend text-red">Avg Peak: 94 dB</div>
+        </div>
+      </div>
+
+      <!-- Calendar Heatmap -->
+      <div class="dashboard-calendar-card">
+        <div class="dcc-header">
+          <h3>Acoustic Intensity - Past 90 Days</h3>
+          <div class="dcc-legend">
+            <span>Quiet</span>
+            <div class="dcc-legend-scale"></div>
+            <span>Loud</span>
+          </div>
+        </div>
+        <div class="dcc-grid" id="calendar-heatmap">
+          <!-- JS will populate the grid squares here -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer" class="section footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="logo-icon">◉</span>
+          <span class="logo-text">SONIC<span class="logo-highlight">GRID</span> AI</span>
+          <p class="footer-tagline">Transforming cities from passive listeners into adaptive acoustic ecosystems.</p>
+        </div>
+        <div class="footer-cta">
+          <h3>Join the Grid</h3>
+          <p>Be part of the urban acoustic revolution.</p>
+          <div class="email-input-group">
+            <input type="email" placeholder="your@email.com" class="email-input" id="email-input"/>
+            <button class="btn btn-primary btn-sm" id="subscribe-btn">Subscribe</button>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 SONICGRID AI. Built for the future of cities.</p>
+        <div class="footer-tech">
+          <span class="tech-badge">Edge AI</span>
+          <span class="tech-badge">GNN</span>
+          <span class="tech-badge">Federated Learning</span>
+          <span class="tech-badge">TinyML</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CITIZEN REPORTER FAB & MODAL -->
+  <button class="fab-report" id="fab-report" aria-label="Report Noise Near Me">
+    <span class="fab-icon">📣</span>
+    <span class="fab-text">Report Noise</span>
+  </button>
+
+  <div class="report-modal-overlay" id="report-modal">
+    <div class="report-modal-content">
+      <button class="report-close" id="report-close">&times;</button>
+      
+      <!-- Step 1: Location -->
+      <div class="report-step active" id="report-step-1">
+        <h3>📍 Confirm Location</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">Simulating GPS connection...</p>
+        <div class="location-pulse" id="location-pulse"></div>
+        <div class="location-result" id="location-result" style="display:none; font-weight: bold; margin: 15px 0; color: var(--accent-cyan); font-size: 1.1rem; padding: 10px; background: rgba(0, 232, 255, 0.1); border-radius: var(--radius-sm); border: 1px solid rgba(0, 232, 255, 0.2);">Near Koramangala, Zone 4</div>
+        <button class="btn btn-primary" id="btn-confirm-location" style="width: 100%; margin-top: 15px;" disabled>Confirm Location</button>
+      </div>
+      
+      <!-- Step 2: Source -->
+      <div class="report-step" id="report-step-2" style="display: none;">
+        <h3>🔊 Select Source</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">What kind of noise are you hearing?</p>
+        <div class="source-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0;">
+          <button class="btn btn-outline btn-source" data-source="Traffic">🚗 Traffic</button>
+          <button class="btn btn-outline btn-source" data-source="Construction">🏗️ Construction</button>
+          <button class="btn btn-outline btn-source" data-source="Party">🎉 Party/Event</button>
+          <button class="btn btn-outline btn-source" data-source="Other">❓ Other</button>
+        </div>
+      </div>
+      
+      <!-- Step 3: Confirmation -->
+      <div class="report-step" id="report-step-3" style="display: none; text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 10px;">✅</div>
+        <h3>Report Logged</h3>
+        <p id="report-confirm-text" style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 15px 0;">Your report near Koramangala has been logged. Current dB in your zone: 78 dB.</p>
+        <button class="btn btn-primary" id="btn-close-report" style="width: 100%;">Done</button>
+      </div>
+      
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
